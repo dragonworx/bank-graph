@@ -2,6 +2,7 @@ import { Rectangle } from '@pixi/math';
 import RBush from 'rbush';
 
 import type Canvas2DPainter from './2dPainter';
+import { mouseDrag } from './mouseDrag';
 
 const corners = {
     center: [0.5, 0.5],
@@ -36,6 +37,11 @@ export class Box
     public anchorX?: number;
     public anchorY?: number;
 
+    public borderWidth: number;
+    public borderColor: string;
+    public backgroundColor: string;
+    public alpha: number;
+
     protected _globalBounds?: Rectangle;
 
     constructor(x: number, y: number, width: number, height: number)
@@ -45,6 +51,11 @@ export class Box
         this.width = width;
         this.height = height;
         this.children = [];
+
+        this.borderWidth = 5;
+        this.borderColor = 'cyan';
+        this.backgroundColor = 'blue';
+        this.alpha = 1;
 
         this.calcGlobalBounds();
     }
@@ -189,13 +200,13 @@ export class Box
 
     public draw(painter: Canvas2DPainter)
     {
-        const { globalBounds } = this;
+        const { globalBounds, alpha, borderWidth, borderColor, backgroundColor } = this;
 
         painter
             .save()
-            .alpha(0.5)
-            .fillColor('red')
-            .strokeColor('white')
+            .alpha(alpha)
+            .fillColor(backgroundColor)
+            .strokeStyle(borderColor, borderWidth)
             .fillRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height)
             .strokeRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height)
             .restore();
@@ -204,6 +215,13 @@ export class Box
     public onMouseDown(e: MouseEvent)
     {
         console.log('onMouseDown', this.id);
+        const startX = this.x;
+        const startY = this.y;
+
+        mouseDrag(e, (deltaX, deltaY) =>
+        {
+            this.setPosition(startX + deltaX, startY + deltaY);
+        });
     }
 
     public onMouseMove(e: MouseEvent)

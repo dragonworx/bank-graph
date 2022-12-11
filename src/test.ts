@@ -15,7 +15,8 @@ export function test()
     rect1.id = 'rect1';
     rect2.id = 'rect2';
 
-    rect2.attachTo(rect1, 'center', 'bottomLeft');
+    // rect2.attachTo(rect1, 'center', 'bottomLeft');
+    rect1.addChild(rect2);
 
     scene.addChild(rect1);
 
@@ -28,14 +29,14 @@ export function test()
             const { x, y } = scene.localMousePos(e, false);
 
             scene.setOrigin(x, y);
-            scene.draw();
         }
         else if (e.altKey)
         {
             const { x, y } = scene.localMousePos(e);
 
             rect1.setPosition(x, y);
-            scene.draw();
         }
+
+        scene.draw();
     };
 }

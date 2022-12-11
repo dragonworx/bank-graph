@@ -200,4 +200,29 @@ export class Box
             .strokeRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height)
             .restore();
     }
+
+    public onMouseDown(e: MouseEvent)
+    {
+        console.log('onMouseDown', this.id);
+    }
+
+    public onMouseMove(e: MouseEvent)
+    {
+        console.log('onMouseMove', this.id);
+    }
+
+    public onMouseOver(e: MouseEvent)
+    {
+        console.log('onMouseOver', this.id);
+    }
+
+    public onMouseOut(e: MouseEvent)
+    {
+        console.log('onMouseOut', this.id);
+    }
+
+    public onMouseUp(e: MouseEvent)
+    {
+        console.log('onMouseUp', this.id);
+    }
 }

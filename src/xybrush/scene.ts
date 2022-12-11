@@ -10,14 +10,21 @@ export class Scene
     public screenX: number;
     public screenY: number;
 
+    protected focus?: Box;
+
     constructor(public readonly canvas: HTMLCanvasElement)
     {
         canvas.width = parseFloat(canvas.style.width);
         canvas.height = parseFloat(canvas.style.height);
 
         this.painter = new Canvas2DPainter(canvas);
+
         this.screenX = 0;
         this.screenY = 0;
+
+        canvas.addEventListener('mousedown', this.onMouseDown);
+        canvas.addEventListener('mousemove', this.onMouseMove);
+        canvas.addEventListener('mouseup', this.onMouseUp);
     }
 
     get ctx()
@@ -57,16 +64,36 @@ export class Scene
         };
     }
 
+    protected getVisibleAtRect(x: number, y: number, w: number, h: number)
+    {
+        const minX = Math.min(x, x + w);
+        const minY = Math.min(y, y + h);
+        const maxX = Math.max(x, x + w);
+        const maxY = Math.max(y, y + h);
+
+        return Box.tree.search({
+            minX,
+            minY,
+            maxX,
+            maxY,
+        });
+    }
+
+    protected getVisibleAtPoint(x: number, y: number)
+    {
+        return Box.tree.search({
+            minX: x,
+            minY: y,
+            maxX: x,
+            maxY: y,
+        });
+    }
+
     public draw()
     {
         const { screenBounds, painter } = this;
 
-        const visibleBoxes = Box.tree.search({
-            minX: screenBounds.left,
-            minY: screenBounds.top,
-            maxX: screenBounds.right,
-            maxY: screenBounds.bottom,
-        });
+        const visibleBoxes = this.getVisibleAtRect(screenBounds.x, screenBounds.y, screenBounds.width, screenBounds.height);
 
         painter.clear();
 
@@ -130,4 +157,55 @@ export class Scene
         this.children.push(box);
         Box.tree.insert(box);
     }
+
+    protected onMouseDown = (e: MouseEvent) =>
+    {
+        const { x, y } = this.localMousePos(e);
+        const boxes = this.getVisibleAtPoint(x, y);
+
+        if (boxes.length > 0)
+        {
+            boxes[0].onMouseDown(e);
+        }
+    };
+
+    protected onMouseMove = (e: MouseEvent) =>
+    {
+        const { x, y } = this.localMousePos(e);
+        const boxes = this.getVisibleAtPoint(x, y);
+
+        if (boxes.length > 0)
+        {
+            const box = boxes[0];
+
+            if (this.focus !== box)
+            {
+                if (this.focus)
+                {
+                    this.focus.onMouseOut(e);
+                }
+
+                this.focus = box;
+                box.onMouseOver(e);
+            }
+
+            boxes[0].onMouseMove(e);
+        }
+        else if (this.focus)
+        {
+            this.focus.onMouseOut(e);
+            this.focus = undefined;
+        }
+    };
+
+    protected onMouseUp = (e: MouseEvent) =>
+    {
+        const { x, y } = this.localMousePos(e);
+        const boxes = this.getVisibleAtPoint(x, y);
+
+        if (boxes.length > 0)
+        {
+            boxes[0].onMouseUp(e);
+        }
+    };
 }

@@ -71,22 +71,49 @@ export class Scene
         const maxX = Math.max(x, x + w);
         const maxY = Math.max(y, y + h);
 
-        return Box.tree.search({
+        const boxes = Box.tree.search({
             minX,
             minY,
             maxX,
             maxY,
         });
+
+        boxes.sort((a: Box, b: Box) =>
+        {
+            const aIndex = a.index;
+            const bIndex = b.index;
+            const aDepth = a.depth;
+            const bDepth = b.depth;
+            const aKey = `${aDepth}-${aIndex}`;
+            const bKey = `${bDepth}-${bIndex}`;
+
+            // if (aDepth < bDepth)
+            // {
+            //     return -1;
+            // }
+            // else if (aDepth > bDepth)
+            // {
+            //     return 1;
+            // }
+
+            // return 0;
+
+            return aKey.localeCompare(bKey);
+        });
+
+        console.log(boxes.map((box) => box.id));
+
+        return boxes;
     }
 
     protected getVisibleAtPoint(x: number, y: number)
     {
-        return Box.tree.search({
-            minX: x,
-            minY: y,
-            maxX: x,
-            maxY: y,
-        });
+        return this.getVisibleAtRect(
+            x,
+            y,
+            1,
+            1,
+        );
     }
 
     public draw()
@@ -110,7 +137,7 @@ export class Scene
             box.draw(this.painter);
         }
 
-        console.log(visibleBoxes.length);
+        // console.log(visibleBoxes.length);
 
         this.painter.restore();
 
@@ -156,6 +183,7 @@ export class Scene
     {
         this.children.push(box);
         Box.tree.insert(box);
+        box.depth = 0;
     }
 
     protected onMouseDown = (e: MouseEvent) =>
@@ -163,6 +191,7 @@ export class Scene
         const { x, y } = this.localMousePos(e);
         const boxes = this.getVisibleAtPoint(x, y);
 
+        // console.log(boxes.map((box) => box.id));
         if (boxes.length > 0)
         {
             boxes[0].onMouseDown(e);

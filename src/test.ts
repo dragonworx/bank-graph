@@ -9,16 +9,21 @@ export function test()
 
     scene.setSize(400, 400);
 
-    const rect1 = new Box(100, 100, 100, 100);
-    const rect2 = new Box(100, 50, 50, 50);
+    const rect1 = new Box(50, 50, 100, 100);
+    const rect2 = new Box(10, 10, 50, 50);
+    const rect3 = new Box(10, 10, 50, 50);
+    const rect4 = new Box(10, 10, 50, 50);
 
     rect1.id = 'rect1';
     rect2.id = 'rect2';
+    rect3.id = 'rect3';
+    rect4.id = 'rect4';
 
     // rect2.attachTo(rect1, 'center', 'bottomLeft');
-    rect1.addChild(rect2);
-
     scene.addChild(rect1);
+    rect1.addChild(rect2);
+    rect2.addChild(rect3);
+    scene.addChild(rect4);
 
     scene.draw();
 

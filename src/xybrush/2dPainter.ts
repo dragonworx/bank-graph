@@ -276,6 +276,16 @@ export default class Canvas2DPainter
         return this;
     }
 
+    public setFont(size: number, family: string, style: FontStyle, color: string)
+    {
+        this._fontSize = size;
+        this._fontStyle = style;
+        this._fontFamily = family;
+        this._fontColor = color;
+
+        return this.updateFont();
+    }
+
     public get font()
     {
         return {

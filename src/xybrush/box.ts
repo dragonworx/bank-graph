@@ -42,6 +42,8 @@ export class Box
     public backgroundColor: string;
     public alpha: number;
 
+    public depth: number;
+
     protected _globalBounds?: Rectangle;
 
     constructor(x: number, y: number, width: number, height: number)
@@ -56,6 +58,8 @@ export class Box
         this.borderColor = 'cyan';
         this.backgroundColor = 'blue';
         this.alpha = 1;
+
+        this.depth = -1;
 
         this.calcGlobalBounds();
     }
@@ -100,6 +104,11 @@ export class Box
         {
             this._globalBounds = new Rectangle(originX, originY, this.width, this.height);
         }
+    }
+
+    get index()
+    {
+        return this.parent ? this.parent.children.indexOf(this) : -1;
     }
 
     get originOffsetX()
@@ -196,6 +205,7 @@ export class Box
         child.parent = this;
         child.clearBounds();
         this.children.push(child);
+        child.depth = this.depth + 1;
     }
 
     public draw(painter: Canvas2DPainter)
@@ -209,6 +219,8 @@ export class Box
             .strokeStyle(borderColor, borderWidth)
             .fillRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height)
             .strokeRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height)
+            .fontSize(20)
+            .drawText(this.id, globalBounds.x, globalBounds.y + 20)
             .restore();
     }
 
@@ -226,21 +238,21 @@ export class Box
 
     public onMouseMove(e: MouseEvent)
     {
-        console.log('onMouseMove', this.id);
+        // console.log('onMouseMove', this.id, e);
     }
 
     public onMouseOver(e: MouseEvent)
     {
-        console.log('onMouseOver', this.id);
+        // console.log('onMouseOver', this.id, e);
     }
 
     public onMouseOut(e: MouseEvent)
     {
-        console.log('onMouseOut', this.id);
+        // console.log('onMouseOut', this.id, e);
     }
 
     public onMouseUp(e: MouseEvent)
     {
-        console.log('onMouseUp', this.id);
+        // console.log('onMouseUp', this.id, e);
     }
 }

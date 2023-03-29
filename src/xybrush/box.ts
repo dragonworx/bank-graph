@@ -236,23 +236,31 @@ export class Box
         });
     }
 
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public onMouseMove(e: MouseEvent)
     {
-        // console.log('onMouseMove', this.id, e);
+        console.log('onMouseMove', this.id);
     }
 
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public onMouseOver(e: MouseEvent)
     {
-        // console.log('onMouseOver', this.id, e);
+        console.log('onMouseOver', this.id);
     }
 
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public onMouseOut(e: MouseEvent)
     {
-        // console.log('onMouseOut', this.id, e);
+        console.log('onMouseOut', this.id);
     }
 
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public onMouseUp(e: MouseEvent)
     {
-        // console.log('onMouseUp', this.id, e);
+        console.log('onMouseUp', this.id);
     }
 }

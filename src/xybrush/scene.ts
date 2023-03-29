@@ -64,7 +64,7 @@ export class Scene
         };
     }
 
-    protected getVisibleAtRect(x: number, y: number, w: number, h: number)
+    protected getVisibleAtRect(x: number, y: number, w: number, h: number, reverse = true)
     {
         const minX = Math.min(x, x + w);
         const minY = Math.min(y, y + h);
@@ -101,7 +101,12 @@ export class Scene
             return aKey.localeCompare(bKey);
         });
 
-        console.log(boxes.map((box) => box.id));
+        // console.log(boxes.map((box) => box.id));
+
+        if (reverse)
+        {
+            boxes.reverse();
+        }
 
         return boxes;
     }
@@ -120,7 +125,7 @@ export class Scene
     {
         const { screenBounds, painter } = this;
 
-        const visibleBoxes = this.getVisibleAtRect(screenBounds.x, screenBounds.y, screenBounds.width, screenBounds.height);
+        const visibleBoxes = this.getVisibleAtRect(screenBounds.x, screenBounds.y, screenBounds.width, screenBounds.height, false);
 
         painter.clear();
 

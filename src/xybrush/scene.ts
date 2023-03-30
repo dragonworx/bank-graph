@@ -25,6 +25,24 @@ export class Scene
         canvas.addEventListener('mousedown', this.onMouseDown);
         canvas.addEventListener('mousemove', this.onMouseMove);
         canvas.addEventListener('mouseup', this.onMouseUp);
+
+        document.body.onmousemove = (e: MouseEvent) =>
+        {
+            if (e.shiftKey)
+            {
+                const { x, y } = this.localMousePos(e, false);
+
+                this.setOrigin(x, y);
+            }
+            else if (e.altKey)
+            {
+                const { x, y } = this.localMousePos(e);
+
+                this.children[0].setPosition(x, y);
+            }
+
+            this.render();
+        };
     }
 
     get ctx()
@@ -49,7 +67,7 @@ export class Scene
     {
         this.screenX = x;
         this.screenY = y;
-        this.draw();
+        this.render();
     }
 
     public localMousePos(e: MouseEvent, applyScreenBounds = true)
@@ -121,7 +139,7 @@ export class Scene
         );
     }
 
-    public draw()
+    public render()
     {
         const { screenBounds, painter } = this;
 
@@ -129,9 +147,9 @@ export class Scene
 
         painter.clear();
 
-        this.drawScreenBounds();
-        this.drawGrid(10, 'darkgreen');
-        this.drawGrid(50, 'lime');
+        // this.drawScreenBounds();
+        // this.drawGrid(10, 'darkgreen');
+        // this.drawGrid(50, 'lime');
 
         this.painter
             .save()
@@ -139,7 +157,7 @@ export class Scene
 
         for (const box of visibleBoxes)
         {
-            box.draw(this.painter);
+            box.render(this.painter);
         }
 
         // console.log(visibleBoxes.length);

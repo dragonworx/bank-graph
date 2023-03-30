@@ -2,7 +2,8 @@ import './style.css';
 
 import { CSV } from './csv';
 import { DropZone } from './dropzone';
-import { test } from './test';
+import { createTable } from './table';
+// import { test } from './test';
 
 const appElement = document.getElementById('app') as HTMLDivElement;
 
@@ -27,6 +28,8 @@ if (localStorage['csv'])
 {
     const csv = await CSV.fromText(localStorage['csv']);
 
+    (window as any).csv = csv;
+
     initCSV(csv);
 }
 
@@ -39,15 +42,20 @@ async function initCSV(csv: CSV)
         .convert(/\bqbe\b/i, 'QBE')
         .convert(/\bfee\b/i, 'Fee');
 
-    // const aggregator = csv.aggregateBy('Narration');
+    const aggregator = csv.aggregateBy('Narration');
 
-    // aggregator.forEach((record) =>
-    // {
-    //     console.log(record.columnName, record.size);
-    // });
+    (window as any).aggregator = aggregator;
 
-    // console.log(aggregator.collect('QBE', 'Debit'));
-    // console.log(aggregator.sum('QBE', 'Debit'));
+    aggregator.forEach((record) =>
+    {
+        console.log(record.columnName, record.size);
+    });
+
+    console.log('--------------');
+    console.log(aggregator.collect('QBE', 'Debit'));
+    console.log(aggregator.sum('QBE', 'Debit'));
+
+    createTable(csv);
 }
 
-test();
+// test();

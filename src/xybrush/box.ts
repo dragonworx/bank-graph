@@ -39,7 +39,7 @@ export class Box
 
     public borderWidth: number;
     public borderColor: string;
-    public backgroundColor: string;
+    public backgroundColor?: string;
     public alpha: number;
 
     public depth: number;
@@ -54,9 +54,9 @@ export class Box
         this.height = height;
         this.children = [];
 
-        this.borderWidth = 5;
-        this.borderColor = 'cyan';
-        this.backgroundColor = 'blue';
+        this.borderWidth = 0;
+        this.borderColor = 'white';
+        this.backgroundColor = 'black';
         this.alpha = 1;
 
         this.depth = -1;
@@ -208,20 +208,45 @@ export class Box
         child.depth = this.depth + 1;
     }
 
+    public render(painter: Canvas2DPainter)
+    {
+        const { globalBounds } = this;
+
+        painter.save();
+        painter.clip(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height);
+        this.drawBackground(painter);
+        this.draw(painter);
+        painter.restore();
+    }
+
+    public drawBackground(painter: Canvas2DPainter)
+    {
+        const { globalBounds } = this;
+
+        painter
+            .fillColor(painter.backgroundColor)
+            .fillRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height);
+    }
+
     public draw(painter: Canvas2DPainter)
     {
         const { globalBounds, alpha, borderWidth, borderColor, backgroundColor } = this;
 
-        painter
-            .save()
-            .alpha(alpha)
-            .fillColor(backgroundColor)
-            .strokeStyle(borderColor, borderWidth)
-            .fillRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height)
-            .strokeRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height)
-            .fontSize(20)
-            .drawText(this.id, globalBounds.x, globalBounds.y + 20)
-            .restore();
+        painter.alpha(alpha);
+
+        if (backgroundColor)
+        {
+            painter
+                .fillColor(backgroundColor)
+                .fillRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height);
+        }
+
+        if (borderWidth > 0)
+        {
+            painter
+                .strokeStyle(borderColor, borderWidth)
+                .strokeRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height);
+        }
     }
 
     public onMouseDown(e: MouseEvent)
@@ -248,6 +273,7 @@ export class Box
     public onMouseOver(e: MouseEvent)
     {
         console.log('onMouseOver', this.id);
+        this.backgroundColor = 'blue';
     }
 
     // @ts-ignore
@@ -255,6 +281,7 @@ export class Box
     public onMouseOut(e: MouseEvent)
     {
         console.log('onMouseOut', this.id);
+        delete this.backgroundColor;
     }
 
     // @ts-ignore

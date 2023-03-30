@@ -198,6 +198,7 @@ export default class Canvas2DPainter
 
         const fillStyle = ctx.fillStyle;
 
+        ctx.textBaseline = 'top';
         ctx.fillStyle = this._fontColor;
         ctx.fillText(text, x, y);
         ctx.fillStyle = fillStyle;

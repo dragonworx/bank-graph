@@ -15,7 +15,6 @@
     "vite": "^3.2.5"
   },
   "dependencies": {
-    "@pixi/math": "^7.0.4",
     "@types/rbush": "^3.0.0",
     "csvtojson": "^2.0.10",
     "eventemitter3": "^5.0.0",

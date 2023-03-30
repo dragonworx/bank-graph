@@ -1,8 +1,8 @@
-import { Rectangle } from '@pixi/math';
 import RBush from 'rbush';
 
 import type Canvas2DPainter from './2dPainter';
 import { mouseDrag } from './mouseDrag';
+import { Rectangle } from './rectangle';
 
 const corners = {
     center: [0.5, 0.5],

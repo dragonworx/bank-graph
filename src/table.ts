@@ -8,7 +8,7 @@ export function createTable(csv: CSV)
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     const scene = new Scene(canvas);
 
-    scene.setSize(400, 400);
+    scene.setSize(1000, 1000);
 
     const fontSize = 12;
 

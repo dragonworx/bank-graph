@@ -1,7 +1,6 @@
-import { Rectangle } from '@pixi/math';
-
 import Canvas2DPainter from './2dPainter';
 import { Box } from './box';
+import { Rectangle } from './rectangle';
 
 export class Scene
 {
@@ -105,21 +104,8 @@ export class Scene
             const aKey = `${aDepth}-${aIndex}`;
             const bKey = `${bDepth}-${bIndex}`;
 
-            // if (aDepth < bDepth)
-            // {
-            //     return -1;
-            // }
-            // else if (aDepth > bDepth)
-            // {
-            //     return 1;
-            // }
-
-            // return 0;
-
             return aKey.localeCompare(bKey);
         });
-
-        // console.log(boxes.map((box) => box.id));
 
         if (reverse)
         {

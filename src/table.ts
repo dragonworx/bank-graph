@@ -14,8 +14,19 @@ export function createTable(csv: CSV)
 
     const x = 0;
     let y = 0;
+    // const rows = csv.rows;
+    const rows: string[][] = [];
 
-    csv.rows.forEach((row) =>
+    for (let i = 0; i < 10000; i++)
+    {
+        rows.push([`row ${i} - n,dsahkj dsahkjdhiu d dhjksa hdiua djksag dkjasg kjdahsgiu dbiwueeiu w biuds gfdksjbf kjfgdsjkf gfdsgkj gfjkdsg fjkdsg jfsdg jfds`]);
+    }
+
+    rows.reverse();
+
+    // const promises: Promise<void>[] = [];
+
+    rows.forEach((row) =>
     {
         const str = row.join(', ');
         const textSize = measureText(str, fontSize);
@@ -28,6 +39,8 @@ export function createTable(csv: CSV)
         y += textSize.height + 5;
 
         scene.addChild(text);
-        scene.render();
+        // scene.render();
     });
+
+    console.log('ready');
 }

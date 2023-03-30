@@ -18,11 +18,21 @@ export function test()
     rect3.id = 'rect3';
     rect4.id = 'rect4';
 
-    // rect2.attachTo(rect1, 'center', 'bottomLeft');
+    rect2.attachTo(rect1, 'center', 'center');
     scene.addChild(rect1);
     rect1.addChild(rect2);
     rect2.addChild(rect3);
     scene.addChild(rect4);
+
+    (window as any).rect = rect1;
+    (window as any).scene = scene;
+
+    setInterval(() =>
+    {
+        rect1.setSize(rect1.width + 1, rect1.height + 1);
+        // rect1.borderWidth += 1;
+        scene.render();
+    }, 100);
 
     scene.render();
 }

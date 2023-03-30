@@ -37,7 +37,7 @@ export class Scene
             {
                 const { x, y } = this.localMousePos(e);
 
-                this.children[0].setPosition(x, y);
+                this.children[this.children.length - 1].setPosition(x, y);
             }
 
             this.render();

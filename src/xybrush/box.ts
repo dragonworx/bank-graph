@@ -211,9 +211,10 @@ export class Box
     public render(painter: Canvas2DPainter)
     {
         const { globalBounds } = this;
+        const p = this.borderWidth;
 
         painter.save();
-        painter.clip(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height);
+        painter.clip(globalBounds.x - p, globalBounds.y - p, globalBounds.width + (p * 2), globalBounds.height + (p * 2));
         this.drawBackground(painter);
         this.draw(painter);
         painter.restore();
@@ -247,6 +248,8 @@ export class Box
                 .strokeStyle(borderColor, borderWidth)
                 .strokeRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height);
         }
+
+        painter.drawText(this.id, globalBounds.x + 10, globalBounds.y + 10);
     }
 
     public onMouseDown(e: MouseEvent)

@@ -3,6 +3,7 @@ import RBush from 'rbush';
 import type Canvas2DPainter from './2dPainter';
 import { mouseDrag } from './mouseDrag';
 import { Rectangle } from './rectangle';
+import { type IStyle, Style } from './style';
 
 const corners = {
     center: [0.5, 0.5],
@@ -18,11 +19,21 @@ const corners = {
 
 type Corner = keyof typeof corners;
 
+export interface BoxOptions
+{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    style?: Partial<IStyle>;
+    id: string;
+}
+
 export class Box
 {
     public static tree: RBush<Box> = new RBush();
 
-    public id = '?';
+    public id: string;
 
     public parent?: Box;
     public children: Box[];
@@ -37,29 +48,29 @@ export class Box
     public anchorX?: number;
     public anchorY?: number;
 
-    public borderWidth: number;
-    public borderColor: string;
-    public backgroundColor?: string;
-    public alpha: number;
+    public style: Style;
 
     public depth: number;
 
     protected _globalBounds?: Rectangle;
 
-    constructor(x: number, y: number, width: number, height: number)
+    protected temp: any;
+
+    constructor(options: Partial<BoxOptions> = {})
     {
+        const { x = 0, y = 0, width = 0, height = 0, style, id = '?' } = options;
+
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.children = [];
 
-        this.borderWidth = 0;
-        this.borderColor = 'white';
-        this.backgroundColor = 'black';
-        this.alpha = 1;
+        this.style = new Style(style);
 
-        this.depth = -1;
+        this.depth = 0;
+
+        this.id = id;
 
         this.calcGlobalBounds();
     }
@@ -183,12 +194,12 @@ export class Box
         this.clearBounds();
     }
 
-    public attachTo(parent: Box, source: Corner, target: Corner)
+    public attachTo(parent: Box, sourceCorner: Corner, targetCorner: Corner)
     {
         parent.addChild(this);
 
-        const [originX, originY] = corners[source];
-        const [anchorX, anchorY] = corners[target];
+        const [originX, originY] = corners[sourceCorner];
+        const [anchorX, anchorY] = corners[targetCorner];
 
         this.setOrigin(originX, originY);
         this.setAnchor(anchorX, anchorY);
@@ -210,37 +221,39 @@ export class Box
 
     public render(painter: Canvas2DPainter)
     {
-        const { globalBounds } = this;
-        const p = this.borderWidth;
+        const { globalBounds, style } = this;
+        const { borderWidth } = style;
+        const p = borderWidth;
 
         painter.save();
+
         painter.clip(globalBounds.x - p, globalBounds.y - p, globalBounds.width + (p * 2), globalBounds.height + (p * 2));
-        this.drawBackground(painter);
         this.draw(painter);
+
         painter.restore();
     }
 
     public drawBackground(painter: Canvas2DPainter)
     {
-        const { globalBounds } = this;
+        const { globalBounds, style } = this;
 
         painter
-            .fillColor(painter.backgroundColor)
+            .fillColor(style.backgroundColor ?? painter.backgroundColor)
             .fillRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height);
     }
 
     public draw(painter: Canvas2DPainter)
     {
-        const { globalBounds, alpha, borderWidth, borderColor, backgroundColor } = this;
+        const { globalBounds, style } = this;
+        const { alpha, borderWidth, borderColor } = style;
+
+        painter
+            .fillColor(painter.backgroundColor)
+            .fillRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height);
 
         painter.alpha(alpha);
 
-        if (backgroundColor)
-        {
-            painter
-                .fillColor(backgroundColor)
-                .fillRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height);
-        }
+        this.drawBackground(painter);
 
         if (borderWidth > 0)
         {
@@ -249,7 +262,7 @@ export class Box
                 .strokeRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height);
         }
 
-        painter.drawText(this.id, globalBounds.x + 10, globalBounds.y + 10);
+        // painter.drawText(this.id, globalBounds.x + 10, globalBounds.y + 10);
     }
 
     public onMouseDown(e: MouseEvent)
@@ -268,29 +281,30 @@ export class Box
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public onMouseMove(e: MouseEvent)
     {
-        console.log('onMouseMove', this.id);
+        // console.log('onMouseMove', this.id);
     }
 
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public onMouseOver(e: MouseEvent)
     {
-        console.log('onMouseOver', this.id);
-        this.backgroundColor = 'blue';
+        this.temp = this.style.backgroundColor;
+        // console.log('onMouseOver', this.id);
+        this.style.backgroundColor = 'blue';
     }
 
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public onMouseOut(e: MouseEvent)
     {
-        console.log('onMouseOut', this.id);
-        delete this.backgroundColor;
+        // console.log('onMouseOut', this.id);
+        this.style.backgroundColor = this.temp;
     }
 
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public onMouseUp(e: MouseEvent)
     {
-        console.log('onMouseUp', this.id);
+        // console.log('onMouseUp', this.id);
     }
 }

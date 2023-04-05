@@ -1,18 +1,25 @@
 import Canvas2DPainter from './2dPainter';
 import { Box } from './box';
 import { Rectangle } from './rectangle';
+import { Text } from './text';
+
+export const defaultSceneWidth = 400;
+export const defaultSceneHeight = 300;
 
 export class Scene
 {
-    public children: Box[] = [];
+    public canvas: HTMLCanvasElement;
+    public root: Text;
     public painter: Canvas2DPainter;
     public screenX: number;
     public screenY: number;
 
     protected focus?: Box;
 
-    constructor(public readonly canvas: HTMLCanvasElement)
+    constructor(public readonly sourceCanvas?: HTMLCanvasElement)
     {
+        const canvas = this.canvas = sourceCanvas ?? document.createElement('canvas');
+
         canvas.width = parseFloat(canvas.style.width);
         canvas.height = parseFloat(canvas.style.height);
 
@@ -24,6 +31,13 @@ export class Scene
         canvas.addEventListener('mousedown', this.onMouseDown);
         canvas.addEventListener('mousemove', this.onMouseMove);
         canvas.addEventListener('mouseup', this.onMouseUp);
+        canvas.addEventListener('mouseout', this.onMouseOut);
+
+        this.root = new Text({ id: 'root', width: canvas.width, height: canvas.height,
+            style: { textAlign: 'center', verticalAlign: 'bottom', backgroundColor: 'green', hPadding: 10, vPadding: 10 } });
+        this.root.text = 'Hello, World!';
+
+        this.setSize(defaultSceneWidth, defaultSceneHeight);
 
         document.body.onmousemove = (e: MouseEvent) =>
         {
@@ -37,7 +51,7 @@ export class Scene
             {
                 const { x, y } = this.localMousePos(e);
 
-                this.children[this.children.length - 1].setPosition(x, y);
+                this.root.children[this.root.children.length - 1].setPosition(x, y);
             }
 
             this.render();
@@ -60,6 +74,7 @@ export class Scene
         this.canvas.height = h;
         this.canvas.style.width = `${w}px`;
         this.canvas.style.height = `${h}px`;
+        this.root.setSize(w, h);
     }
 
     public setOrigin(x: number, y: number)
@@ -133,10 +148,6 @@ export class Scene
 
         painter.clear();
 
-        // this.drawScreenBounds();
-        // this.drawGrid(10, 'darkgreen');
-        // this.drawGrid(50, 'lime');
-
         this.painter
             .save()
             .translate(-screenBounds.left, -screenBounds.top);
@@ -145,8 +156,6 @@ export class Scene
         {
             box.render(this.painter);
         }
-
-        // console.log(visibleBoxes.length);
 
         this.painter.restore();
 
@@ -186,13 +195,6 @@ export class Scene
         }
 
         painter.restore();
-    }
-
-    public addChild(box: Box)
-    {
-        this.children.push(box);
-        Box.tree.insert(box);
-        box.depth = 0;
     }
 
     protected onMouseDown = (e: MouseEvent) =>
@@ -244,6 +246,15 @@ export class Scene
         if (boxes.length > 0)
         {
             boxes[0].onMouseUp(e);
+        }
+    };
+
+    protected onMouseOut = (e: MouseEvent) =>
+    {
+        if (this.focus)
+        {
+            this.focus.onMouseOut(e);
+            this.focus = undefined;
         }
     };
 }

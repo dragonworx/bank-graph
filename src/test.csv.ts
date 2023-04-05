@@ -3,6 +3,7 @@ import './style.css';
 import { CSV } from './csv';
 import { DropZone } from './dropzone';
 import { createTable } from './test-table';
+// import { test } from './test';
 
 const appElement = document.getElementById('app') as HTMLDivElement;
 
@@ -56,3 +57,5 @@ async function initCSV(csv: CSV)
 
     createTable(csv);
 }
+
+// test();

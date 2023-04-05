@@ -64,6 +64,7 @@ export default class Canvas2DPainter
     protected _fontSize: number;
     protected _fontStyle: FontStyle;
     protected _fontFamily: string;
+    protected _textBaseline: CanvasTextBaseline;
 
     constructor(canvas: HTMLCanvasElement, backgroundColor = 'black')
     {
@@ -71,6 +72,7 @@ export default class Canvas2DPainter
         this._fontSize = 11;
         this._fontStyle = 'normal';
         this._fontFamily = 'sans-serif';
+        this._textBaseline = 'top';
 
         this._backgroundColor = backgroundColor;
         this.canvas = canvas;
@@ -192,13 +194,27 @@ export default class Canvas2DPainter
         return this;
     }
 
+    public setTextAlign(align: CanvasTextAlign)
+    {
+        this.ctx.textAlign = align;
+
+        return this;
+    }
+
+    public setTextBaseline(baseline: CanvasTextBaseline)
+    {
+        this._textBaseline = baseline;
+        this.ctx.textBaseline = baseline;
+
+        return this;
+    }
+
     public drawText(text: string, x: number, y: number)
     {
         const { ctx } = this;
-
         const fillStyle = ctx.fillStyle;
 
-        ctx.textBaseline = 'top';
+        this.ctx.textBaseline = this._textBaseline;
         ctx.fillStyle = this._fontColor;
         ctx.fillText(text, x, y);
         ctx.fillStyle = fillStyle;

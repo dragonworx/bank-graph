@@ -19,10 +19,10 @@ export function test()
     rect4.id = 'rect4';
 
     rect2.attachTo(rect1, 'center', 'center');
-    scene.addChild(rect1);
+    scene.root.addChild(rect1);
     rect1.addChild(rect2);
     rect2.addChild(rect3);
-    scene.addChild(rect4);
+    scene.root.addChild(rect4);
 
     (window as any).rect = rect1;
     (window as any).scene = scene;

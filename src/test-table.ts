@@ -1,8 +1,5 @@
 import type { CSV } from './csv';
-import { measureText } from './xybrush/2dPainter';
-import { Box } from './xybrush/box';
 import { Scene } from './xybrush/scene';
-import type { IStyle } from './xybrush/style';
 import { Text } from './xybrush/text';
 
 export function createTable(csv: CSV)
@@ -15,21 +12,19 @@ export function createTable(csv: CSV)
 
     const fontSize = 12;
 
-    const x = 0;
-    let y = 0;
+    const x = 10;
+    let y = 10;
     const rows = csv.rows;
 
     rows.forEach((row) =>
     {
         const str = row.join(', ');
-        const textSize = measureText(str, fontSize);
-        const text = new Text({ id: 'text', x, y, width: textSize.width, height: textSize.height, style: { backgroundColor: 'red', alpha: 0.5 } });
+        const text = new Text({ id: 'text', x, y, style: { backgroundColor: 'black' } });
 
         text.fontSize = fontSize;
-        text.text = str;
-        text.setSize(textSize.width, textSize.height);
+        text.setText(str);
 
-        y += textSize.height + 5;
+        y += text.height + 5;
 
         scene.root.addChild(text);
     });
@@ -45,7 +40,7 @@ export function createTable(csv: CSV)
     // scene.root.addChild(left);
     // scene.root.addChild(right);
 
-    // console.log(scene.root);
+    // console.log('?', scene.root.root);
 
     console.log('ready');
     scene.render();

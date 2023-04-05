@@ -5,6 +5,8 @@ export function degToRad(deg: number)
 
 export const px = (value: number) => value + 0.5;
 
+export const defaultFontFamily = 'sans-serif';
+
 export function isCanvasSupported()
 {
     return document.createElement('canvas').getContext('2d') !== null;
@@ -21,7 +23,7 @@ export function createTextCanvas(
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-    ctx.font = `${fontSize}px sans-serif`;
+    ctx.font = `${fontSize}px ${defaultFontFamily}`;
 
     const metrics = ctx.measureText(text);
     const height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
@@ -32,7 +34,7 @@ export function createTextCanvas(
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, width + padding, height + padding);
     ctx.fillStyle = color;
-    ctx.font = `${fontSize}px sans-serif`;
+    ctx.font = `${fontSize}px ${defaultFontFamily}`;
     ctx.fillText(text, padding / 2, height + (padding / 2));
 
     return canvas;
@@ -40,11 +42,11 @@ export function createTextCanvas(
 
 const textMeasureCanvas: HTMLCanvasElement = document.createElement('canvas');
 
-export function measureText(text: string, fontSize = 12)
+export function measureText(text: string, fontSize = 12, fontFamily = defaultFontFamily)
 {
     const ctx = textMeasureCanvas.getContext('2d') as CanvasRenderingContext2D;
 
-    ctx.font = `${fontSize}px sans-serif`;
+    ctx.font = `${fontSize}px ${fontFamily}`;
 
     const metrics = ctx.measureText(text);
     const height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
@@ -71,7 +73,7 @@ export default class Canvas2DPainter
         this._fontColor = 'white';
         this._fontSize = 11;
         this._fontStyle = 'normal';
-        this._fontFamily = 'sans-serif';
+        this._fontFamily = defaultFontFamily;
         this._textBaseline = 'top';
 
         this._backgroundColor = backgroundColor;

@@ -36,6 +36,7 @@ export class Scene
         this.root = new Text({ id: 'root', width: canvas.width, height: canvas.height,
             style: { textAlign: 'center', verticalAlign: 'bottom', backgroundColor: 'green', hPadding: 10, vPadding: 10 } });
         this.root.text = 'Hello, World!';
+        this.root._scene = this;
 
         this.setSize(defaultSceneWidth, defaultSceneHeight);
 
@@ -66,6 +67,11 @@ export class Scene
     get screenBounds()
     {
         return new Rectangle(this.screenX, this.screenY, this.canvas.offsetWidth, this.canvas.offsetHeight);
+    }
+
+    get canvasBounds()
+    {
+        return this.canvas.getBoundingClientRect();
     }
 
     public setSize(w: number, h: number)

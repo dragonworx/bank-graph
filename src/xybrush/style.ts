@@ -29,7 +29,7 @@ export class Style implements IStyle
         borderColor = 'white',
         alpha = 1,
         backgroundColor = 'black',
-        textAlign = 'center',
+        textAlign = 'left',
         verticalAlign = 'middle',
         hPadding = 0,
         vPadding = 0,

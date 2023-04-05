@@ -1,4 +1,5 @@
 import type Canvas2DPainter from './2dPainter';
+import { measureText } from './2dPainter';
 import { Box } from './box';
 
 export class Text extends Box
@@ -54,5 +55,73 @@ export class Text extends Box
             .setTextAlign(textAlign)
             .setTextBaseline(textBaseline)
             .drawText(this.text, x, y);
+    }
+
+    public setText(text: string)
+    {
+        this.text = text;
+        this.resize();
+    }
+
+    public resize()
+    {
+        const scene = this.scene;
+        const textSize = measureText(this.text, this.fontSize, scene ? this.scene.painter.font.family : undefined);
+
+        this.setSize(textSize.width, textSize.height);
+    }
+
+    public onMouseDown(): void
+    {
+        const { globalBounds, scene, style } = this;
+        const bounds = scene.canvasBounds;
+        const container = document.createElement('div');
+
+        container.style.cssText = `
+            position: absolute;
+            left: ${bounds.left + globalBounds.x - 1}px;
+            top: ${bounds.top + globalBounds.y + 0}px;
+            width: ${globalBounds.width}px;
+            height: ${globalBounds.height}px;
+            background-color: ${style.backgroundColor};
+        `;
+
+        const input = document.createElement('input');
+
+        input.value = this.text;
+        input.oninput = () =>
+        {
+            this.text = input.value;
+            // scene.render();
+        };
+
+        input.focus();
+
+        input.onkeydown = (e) =>
+        {
+            if (e.key === 'Enter')
+            {
+                container.remove();
+                scene.render();
+            }
+        };
+
+        input.style.cssText = `
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+            border: none;
+            color: ${'white'};
+            font-size: ${this.fontSize}px;
+            font-family: sans-serif;
+            outline: none;
+        `;
+
+        container.appendChild(input);
+
+        document.body.appendChild(container);
     }
 }

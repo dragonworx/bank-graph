@@ -3,6 +3,7 @@ import RBush from 'rbush';
 import type Canvas2DPainter from './2dPainter';
 import { mouseDrag } from './mouseDrag';
 import { Rectangle } from './rectangle';
+import type { Scene } from './scene';
 import { type IStyle, Style } from './style';
 
 const corners = {
@@ -35,6 +36,7 @@ export class Box
 
     public id: string;
 
+    public _scene?: Scene;
     public parent?: Box;
     public children: Box[];
 
@@ -73,6 +75,31 @@ export class Box
         this.id = id;
 
         this.calcGlobalBounds();
+    }
+
+    get root()
+    {
+        if (!this.parent)
+        {
+            return this as unknown as Box;
+        }
+
+        // walk parents until root
+        let root = this.parent;
+
+        while (root.parent)
+        {
+            root = root.parent;
+        }
+
+        return root;
+    }
+
+    get scene()
+    {
+        const root = this.root;
+
+        return root._scene as Scene;
     }
 
     public clearBounds()

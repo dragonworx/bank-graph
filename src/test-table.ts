@@ -1,5 +1,7 @@
 import type { CSV } from './csv';
+import { Box } from './xybrush/box';
 import { Scene } from './xybrush/scene';
+import type { IStyle } from './xybrush/style';
 import { Text } from './xybrush/text';
 
 export function createTable(csv: CSV)
@@ -21,10 +23,10 @@ export function createTable(csv: CSV)
         const str = row.join(', ');
         const text = new Text({ id: 'text', x, y, style: { backgroundColor: 'black' } });
 
-        text.fontSize = fontSize;
+        text.state.fontSize = fontSize;
         text.setText(str);
 
-        y += text.height + 5;
+        y += text.state.height + 5;
 
         scene.root.addChild(text);
     });

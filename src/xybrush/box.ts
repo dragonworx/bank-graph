@@ -20,61 +20,77 @@ const corners = {
 
 type Corner = keyof typeof corners;
 
-export interface BoxOptions
+export interface BoxState
 {
     x: number;
     y: number;
     width: number;
     height: number;
-    style?: Partial<IStyle>;
-    id: string;
+    originX: number;
+    originY: number;
+    anchorX?: number;
+    anchorY?: number;
 }
 
-export class Box
+export interface BoxOptions extends BoxState
+{
+    id: string;
+    style: Partial<IStyle>;
+}
+
+export class Box<T extends BoxState = BoxState>
 {
     public static tree: RBush<Box> = new RBush();
 
     public id: string;
-
     public _scene?: Scene;
     public parent?: Box;
     public children: Box[];
-
-    public x: number;
-    public y: number;
-    public width: number;
-    public height: number;
-
-    public originX = 0;
-    public originY = 0;
-    public anchorX?: number;
-    public anchorY?: number;
-
     public style: Style;
-
+    public state: T;
     public depth: number;
 
     protected _globalBounds?: Rectangle;
-
     protected temp: any;
 
-    constructor(options: Partial<BoxOptions> = {})
+    constructor(public readonly options: Partial<BoxOptions> = {})
     {
-        const { x = 0, y = 0, width = 0, height = 0, style, id = '?' } = options;
-
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.children = [];
-
-        this.style = new Style(style);
-
-        this.depth = 0;
+        const { style = {}, id = '?' } = options;
 
         this.id = id;
+        this.children = [];
+        this.style = new Style(style);
+        this.depth = 0;
+
+        const state = this.defaultState();
+
+        Object.keys(options).forEach((key) =>
+        {
+            if (key in state)
+            {
+                const stateKey = key as keyof T;
+                const optionsVal = (options as T)[stateKey];
+
+                state[stateKey] = optionsVal;
+            }
+        });
+
+        this.state = state;
+        console.log(this.id, state);
 
         this.calcGlobalBounds();
+    }
+
+    protected defaultState(): T
+    {
+        return {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+            originX: 0,
+            originY: 0,
+        } as T;
     }
 
     get root()
@@ -102,61 +118,19 @@ export class Box
         return root._scene as Scene;
     }
 
-    public clearBounds()
-    {
-        Box.tree.remove(this);
-
-        delete this._globalBounds;
-
-        this.children.forEach((child) => child.clearBounds());
-
-        Box.tree.insert(this);
-    }
-
-    protected calcGlobalBounds()
-    {
-        const { x, y, originOffsetX, originOffsetY, anchorX, anchorY } = this;
-        const originX = x - originOffsetX;
-        const originY = y - originOffsetY;
-
-        if (this.parent)
-        {
-            const { x, y, width, height } = this.parent.globalBounds;
-
-            let left = x + originX;
-            let top = y + originY;
-
-            if (typeof anchorX === 'number')
-            {
-                left = x + (width * anchorX) - originOffsetX;
-            }
-
-            if (typeof anchorY === 'number')
-            {
-                top = y + (height * anchorY) - originOffsetY;
-            }
-
-            this._globalBounds = new Rectangle(left, top, this.width, this.height);
-        }
-        else
-        {
-            this._globalBounds = new Rectangle(originX, originY, this.width, this.height);
-        }
-    }
-
-    get index()
+    get index(): number
     {
         return this.parent ? this.parent.children.indexOf(this) : -1;
     }
 
     get originOffsetX()
     {
-        return this.width * this.originX;
+        return this.state.width * this.state.originX;
     }
 
     get originOffsetY()
     {
-        return this.height * this.originY;
+        return this.state.height * this.state.originY;
     }
 
     get globalBounds(): Rectangle
@@ -189,34 +163,76 @@ export class Box
         return this.globalBounds.bottom;
     }
 
+    public clearBounds()
+    {
+        Box.tree.remove(this);
+
+        delete this._globalBounds;
+
+        this.children.forEach((child) => child.clearBounds());
+
+        Box.tree.insert(this);
+    }
+
+    protected calcGlobalBounds()
+    {
+        const { state, originOffsetX, originOffsetY } = this;
+        const originX = state.x - originOffsetX;
+        const originY = state.y - originOffsetY;
+
+        if (this.parent)
+        {
+            const { x, y, width, height } = this.parent.globalBounds;
+
+            let left = x + originX;
+            let top = y + originY;
+
+            if (typeof state.anchorX === 'number')
+            {
+                left = x + (width * state.anchorX) - originOffsetX;
+            }
+
+            if (typeof state.anchorY === 'number')
+            {
+                top = y + (height * state.anchorY) - originOffsetY;
+            }
+
+            this._globalBounds = new Rectangle(left, top, this.state.width, this.state.height);
+        }
+        else
+        {
+            this._globalBounds = new Rectangle(originX, originY, this.state.width, this.state.height);
+        }
+    }
+
     public setOrigin(x: number, y: number)
     {
-        this.originX = x;
-        this.originY = y;
+        this.state.originX = x;
+        this.state.originY = y;
 
         this.clearBounds();
     }
 
     public setAnchor(x: number | undefined, y: number | undefined)
     {
-        this.anchorX = x;
-        this.anchorY = y;
+        this.state.anchorX = x;
+        this.state.anchorY = y;
 
         this.clearBounds();
     }
 
     public setPosition(x: number, y: number)
     {
-        this.x = x;
-        this.y = y;
+        this.state.x = x;
+        this.state.y = y;
 
         this.clearBounds();
     }
 
     public setSize(width: number, height: number)
     {
-        this.width = width;
-        this.height = height;
+        this.state.width = width;
+        this.state.height = height;
 
         this.clearBounds();
     }
@@ -295,8 +311,8 @@ export class Box
     public onMouseDown(e: MouseEvent)
     {
         console.log('onMouseDown', this.id);
-        const startX = this.x;
-        const startY = this.y;
+        const startX = this.state.x;
+        const startY = this.state.y;
 
         mouseDrag(e, (deltaX, deltaY) =>
         {
@@ -318,6 +334,7 @@ export class Box
         this.temp = this.style.backgroundColor;
         // console.log('onMouseOver', this.id);
         this.style.backgroundColor = 'blue';
+        console.log(this.id, this.state);
     }
 
     // @ts-ignore

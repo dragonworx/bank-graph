@@ -1,11 +1,33 @@
 import type Canvas2DPainter from './2dPainter';
 import { measureText } from './2dPainter';
-import { Box } from './box';
+import { type BoxOptions, type BoxState, Box } from './box';
 
-export class Text extends Box
+export interface TextState extends BoxState
+{
+    fontSize: number;
+}
+
+export interface TextOptions extends BoxOptions, TextState
+{
+    autoWidth?: boolean;
+}
+
+export class Text extends Box<TextState>
 {
     public text = '';
-    public fontSize = 12;
+
+    constructor(options: Partial<TextOptions> = {})
+    {
+        super(options);
+    }
+
+    protected defaultState(): TextState
+    {
+        return {
+            ...super.defaultState(),
+            fontSize: 12,
+        };
+    }
 
     public draw(painter: Canvas2DPainter)
     {
@@ -51,7 +73,7 @@ export class Text extends Box
 
         painter
             .fontColor('white')
-            .fontSize(this.fontSize)
+            .fontSize(this.state.fontSize)
             .setTextAlign(textAlign)
             .setTextBaseline(textBaseline)
             .drawText(this.text, x, y);
@@ -66,7 +88,7 @@ export class Text extends Box
     public resize()
     {
         const scene = this.scene;
-        const textSize = measureText(this.text, this.fontSize, scene ? this.scene.painter.font.family : undefined);
+        const textSize = measureText(this.text, this.state.fontSize, scene ? this.scene.painter.font.family : undefined);
 
         this.setSize(textSize.width, textSize.height);
     }
@@ -92,10 +114,9 @@ export class Text extends Box
         input.oninput = () =>
         {
             this.text = input.value;
+            // this.setText(input.value);
             // scene.render();
         };
-
-        input.focus();
 
         input.onkeydown = (e) =>
         {
@@ -115,7 +136,7 @@ export class Text extends Box
             background-color: transparent;
             border: none;
             color: ${'white'};
-            font-size: ${this.fontSize}px;
+            font-size: ${this.state.fontSize}px;
             font-family: sans-serif;
             outline: none;
         `;
@@ -123,5 +144,8 @@ export class Text extends Box
         container.appendChild(input);
 
         document.body.appendChild(container);
+
+        input.focus();
+        input.setSelectionRange(0, input.value.length);
     }
 }

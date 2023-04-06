@@ -44,9 +44,10 @@ export class Scene
         {
             if (e.shiftKey)
             {
+                const bounds = this.canvasBounds;
                 const { x, y } = this.localMousePos(e, false);
 
-                this.setOrigin(x, y);
+                this.setOrigin(x - (bounds.width / 2), y - (bounds.height / 2));
             }
             else if (e.altKey)
             {

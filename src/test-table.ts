@@ -12,24 +12,24 @@ export function createTable(csv: CSV)
 
     scene.setSize(1000, 1000);
 
-    const fontSize = 12;
+    // const fontSize = 12;
 
-    const x = 10;
-    let y = 10;
-    const rows = csv.rows;
+    // const x = 10;
+    // let y = 10;
+    // const rows = csv.rows;
 
-    rows.forEach((row) =>
-    {
-        const str = row.join(', ');
-        const text = new Text({ id: 'text', x, y, style: { backgroundColor: 'black' } });
+    // rows.forEach((row) =>
+    // {
+    //     const str = row.join(', ');
+    //     const text = new Text({ id: 'text', x, y, style: { backgroundColor: 'black' } });
 
-        text.state.fontSize = fontSize;
-        text.setText(str);
+    //     text.state.fontSize = fontSize;
+    //     text.setText(str);
 
-        y += text.state.height + 5;
+    //     y += text.state.height + 5;
 
-        scene.root.addChild(text);
-    });
+    //     scene.root.addChild(text);
+    // });
 
     // const style: Partial<IStyle> = { backgroundColor: 'red', alpha: 0.5 };
     // const top = new Box({ id: 'top', width: scene.canvas.width, height: 5, style });
@@ -42,7 +42,20 @@ export function createTable(csv: CSV)
     // scene.root.addChild(left);
     // scene.root.addChild(right);
 
-    // console.log('?', scene.root.root);
+    const style: Partial<IStyle> = { backgroundColor: 'red', alpha: 0.5 };
+    const top = new Box({ id: 'top', height: 5, style });
+    // const bottom = new Box({ id: 'bottom', y: scene.canvas.height - 5, width: scene.canvas.width, height: 5, style });
+    // const left = new Box({ id: 'left', width: 5, height: scene.canvas.height, style });
+    // const right = new Box({ id: 'right', x: scene.canvas.width - 5, width: 5, height: scene.canvas.height, style });
+
+    top.attachTo(scene.root, 'topLeft', 'topLeft');
+
+    // scene.root.addChild(top);
+    // scene.root.addChild(bottom);
+    // scene.root.addChild(left);
+    // scene.root.addChild(right);
+
+    console.log('?', scene.root.root);
 
     console.log('ready');
     scene.render();

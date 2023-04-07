@@ -76,7 +76,6 @@ export class Box<T extends BoxState = BoxState>
         });
 
         this.state = state;
-        console.log(this.id, state);
 
         this.calcGlobalBounds();
     }
@@ -90,7 +89,7 @@ export class Box<T extends BoxState = BoxState>
             height: 0,
             originX: 0,
             originY: 0,
-        } as T;
+        } as BoxState as T;
     }
 
     get root()
@@ -143,6 +142,19 @@ export class Box<T extends BoxState = BoxState>
         return this._globalBounds as Rectangle;
     }
 
+    get globalContentBounds(): Rectangle
+    {
+        const { left, top, width, height } = this.globalBounds;
+        const { hPadding, vPadding } = this.style;
+
+        return new Rectangle(
+            left + hPadding,
+            top + vPadding,
+            width - (hPadding * 2),
+            height - (vPadding * 2),
+        );
+    }
+
     get minX()
     {
         return this.globalBounds.left;
@@ -182,7 +194,7 @@ export class Box<T extends BoxState = BoxState>
 
         if (this.parent)
         {
-            const { x, y, width, height } = this.parent.globalBounds;
+            const { x, y, width, height } = this.parent.globalContentBounds;
 
             let left = x + originX;
             let top = y + originY;
@@ -334,7 +346,6 @@ export class Box<T extends BoxState = BoxState>
         this.temp = this.style.backgroundColor;
         // console.log('onMouseOver', this.id);
         this.style.backgroundColor = 'blue';
-        console.log(this.id, this.state);
     }
 
     // @ts-ignore

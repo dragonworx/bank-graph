@@ -95,57 +95,8 @@ export class Text extends Box<TextState>
 
     public onMouseDown(): void
     {
-        const { globalBounds, scene, style } = this;
-        const bounds = scene.canvasBounds;
-        const container = document.createElement('div');
+        // const { globalBounds, scene, style } = this;
+        // const bounds = scene.canvasBounds;
 
-        container.style.cssText = `
-            position: absolute;
-            left: ${bounds.left + globalBounds.x - 1}px;
-            top: ${bounds.top + globalBounds.y + 0}px;
-            width: ${globalBounds.width}px;
-            height: ${globalBounds.height}px;
-            background-color: ${style.backgroundColor};
-        `;
-
-        const input = document.createElement('input');
-
-        input.value = this.text;
-        input.oninput = () =>
-        {
-            this.text = input.value;
-            // this.setText(input.value);
-            // scene.render();
-        };
-
-        input.onkeydown = (e) =>
-        {
-            if (e.key === 'Enter')
-            {
-                container.remove();
-                scene.render();
-            }
-        };
-
-        input.style.cssText = `
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: transparent;
-            border: none;
-            color: ${'white'};
-            font-size: ${this.state.fontSize}px;
-            font-family: sans-serif;
-            outline: none;
-        `;
-
-        container.appendChild(input);
-
-        document.body.appendChild(container);
-
-        input.focus();
-        input.setSelectionRange(0, input.value.length);
     }
 }

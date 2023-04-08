@@ -11,6 +11,8 @@ export interface IStyle
     verticalAlign: VerticalAlign;
     hPadding: number;
     vPadding: number;
+    hMargin: number;
+    vMargin: number;
 }
 
 export class Style implements IStyle
@@ -23,6 +25,8 @@ export class Style implements IStyle
     public verticalAlign: VerticalAlign;
     public hPadding;
     public vPadding;
+    public hMargin;
+    public vMargin;
 
     constructor({
         borderWidth = 0,
@@ -33,6 +37,8 @@ export class Style implements IStyle
         verticalAlign = 'middle',
         hPadding = 0,
         vPadding = 0,
+        hMargin = 0,
+        vMargin = 0,
     }: Partial<IStyle> = {})
     {
         this.borderWidth = borderWidth;
@@ -43,5 +49,7 @@ export class Style implements IStyle
         this.verticalAlign = verticalAlign;
         this.hPadding = hPadding;
         this.vPadding = vPadding;
+        this.hMargin = hMargin;
+        this.vMargin = vMargin;
     }
 }

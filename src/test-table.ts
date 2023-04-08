@@ -43,17 +43,18 @@ export function createTable(csv: CSV)
     // scene.root.addChild(right);
 
     const style: Partial<IStyle> = { backgroundColor: 'red', alpha: 0.5 };
-    const top = new Box({ id: 'top', height: 5, style });
-    // const bottom = new Box({ id: 'bottom', y: scene.canvas.height - 5, width: scene.canvas.width, height: 5, style });
-    // const left = new Box({ id: 'left', width: 5, height: scene.canvas.height, style });
-    // const right = new Box({ id: 'right', x: scene.canvas.width - 5, width: 5, height: scene.canvas.height, style });
+    const top = new Box({ id: 'top', width: '100%', height: 5, style });
+    const bottom = new Box({ id: 'bottom', y: '100%', width: '100%', height: 5, style });
+    const left = new Box({ id: 'left', width: 5, height: '100%', style });
+    const right = new Box({ id: 'right', x: '100%', width: 5, height: '100%', style });
 
-    top.attachTo(scene.root, 'topLeft', 'topLeft');
+    const box = new Box({ id: 'box', width: '100%', height: '100%', style: { backgroundColor: 'black', hMargin: 10, vMargin: 20 } });
 
-    // scene.root.addChild(top);
-    // scene.root.addChild(bottom);
-    // scene.root.addChild(left);
-    // scene.root.addChild(right);
+    scene.root.addChild(top);
+    scene.root.addChild(bottom);
+    scene.root.addChild(left);
+    scene.root.addChild(right);
+    scene.root.addChild(box);
 
     console.log('?', scene.root.root);
 

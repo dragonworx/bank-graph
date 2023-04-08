@@ -22,10 +22,10 @@ type Corner = keyof typeof corners;
 
 export interface BoxState
 {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
+    x: number | string;
+    y: number | string;
+    width: number | string;
+    height: number | string;
     originX: number;
     originY: number;
     anchorX?: number;
@@ -53,7 +53,7 @@ export class Box<T extends BoxState = BoxState>
     protected _globalBounds?: Rectangle;
     protected temp: any;
 
-    constructor(public readonly options: Partial<BoxOptions> = {})
+    constructor(public readonly options: Partial<BoxOptions> = {}, scene?: Scene)
     {
         const { style = {}, id = '?' } = options;
 
@@ -61,6 +61,7 @@ export class Box<T extends BoxState = BoxState>
         this.children = [];
         this.style = new Style(style);
         this.depth = 0;
+        this._scene = scene;
 
         const state = this.defaultState();
 
@@ -76,8 +77,6 @@ export class Box<T extends BoxState = BoxState>
         });
 
         this.state = state;
-
-        this.calcGlobalBounds();
     }
 
     protected defaultState(): T
@@ -122,14 +121,38 @@ export class Box<T extends BoxState = BoxState>
         return this.parent ? this.parent.children.indexOf(this) : -1;
     }
 
+    get x()
+    {
+        return typeof this.state.x === 'string' && this.parent
+            ? ((parseFloat(this.state.x) / 100) * this.parent.globalContentBounds.width) - this.width + this.style.hMargin : this.state.x as number;
+    }
+
+    get y()
+    {
+        return typeof this.state.y === 'string' && this.parent
+            ? ((parseFloat(this.state.y) / 100) * this.parent.globalContentBounds.height) - this.height : this.state.y as number;
+    }
+
+    get width()
+    {
+        return typeof this.state.width === 'string' && this.parent
+            ? ((parseFloat(this.state.width) / 100) * this.parent.globalContentBounds.width) - (this.style.hMargin * 2) : this.state.width as number;
+    }
+
+    get height()
+    {
+        return typeof this.state.height === 'string' && this.parent
+            ? ((parseFloat(this.state.height) / 100) * this.parent.globalContentBounds.height) - (this.style.vMargin * 2) : this.state.height as number;
+    }
+
     get originOffsetX()
     {
-        return this.state.width * this.state.originX;
+        return this.width * this.state.originX;
     }
 
     get originOffsetY()
     {
-        return this.state.height * this.state.originY;
+        return this.height * this.state.originY;
     }
 
     get globalBounds(): Rectangle
@@ -188,9 +211,9 @@ export class Box<T extends BoxState = BoxState>
 
     protected calcGlobalBounds()
     {
-        const { state, originOffsetX, originOffsetY } = this;
-        const originX = state.x - originOffsetX;
-        const originY = state.y - originOffsetY;
+        const { state, originOffsetX, originOffsetY, style } = this;
+        const originX = this.x - originOffsetX + style.hMargin;
+        const originY = this.y - originOffsetY + style.vMargin;
 
         if (this.parent)
         {
@@ -209,11 +232,11 @@ export class Box<T extends BoxState = BoxState>
                 top = y + (height * state.anchorY) - originOffsetY;
             }
 
-            this._globalBounds = new Rectangle(left, top, this.state.width, this.state.height);
+            this._globalBounds = new Rectangle(left, top, this.width, this.height);
         }
         else
         {
-            this._globalBounds = new Rectangle(originX, originY, this.state.width, this.state.height);
+            this._globalBounds = new Rectangle(originX, originY, this.width, this.height);
         }
     }
 
@@ -269,9 +292,9 @@ export class Box<T extends BoxState = BoxState>
     public addChild(child: Box)
     {
         child.parent = this;
-        child.clearBounds();
         this.children.push(child);
         child.depth = this.depth + 1;
+        child.clearBounds();
     }
 
     public render(painter: Canvas2DPainter)
@@ -323,8 +346,8 @@ export class Box<T extends BoxState = BoxState>
     public onMouseDown(e: MouseEvent)
     {
         console.log('onMouseDown', this.id);
-        const startX = this.state.x;
-        const startY = this.state.y;
+        const startX = this.x;
+        const startY = this.y;
 
         mouseDrag(e, (deltaX, deltaY) =>
         {

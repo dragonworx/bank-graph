@@ -1,7 +1,6 @@
 import Canvas2DPainter from './2dPainter';
 import { Box } from './box';
 import { Rectangle } from './rectangle';
-import { Text } from './text';
 
 export const defaultSceneWidth = 400;
 export const defaultSceneHeight = 300;
@@ -9,7 +8,7 @@ export const defaultSceneHeight = 300;
 export class Scene
 {
     public canvas: HTMLCanvasElement;
-    public root: Text;
+    public root: Box;
     public painter: Canvas2DPainter;
     public screenX: number;
     public screenY: number;
@@ -33,10 +32,8 @@ export class Scene
         canvas.addEventListener('mouseup', this.onMouseUp);
         canvas.addEventListener('mouseout', this.onMouseOut);
 
-        this.root = new Text({ id: 'root', width: canvas.width, height: canvas.height,
-            style: { textAlign: 'center', verticalAlign: 'bottom', backgroundColor: 'green', hPadding: 10, vPadding: 10 } });
-        this.root.text = 'Hello, World!';
-        this.root._scene = this;
+        this.root = new Box({ id: 'root', width: canvas.width, height: canvas.height,
+            style: { textAlign: 'center', verticalAlign: 'bottom', backgroundColor: 'green', hPadding: 10, vPadding: 10 } }, this);
 
         this.setSize(defaultSceneWidth, defaultSceneHeight);
 

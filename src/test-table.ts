@@ -48,16 +48,16 @@ export function createTable(csv: CSV)
     const left = new Box({ id: 'left', width: 5, height: '100%', style });
     const right = new Box({ id: 'right', x: '100%', width: 5, height: '100%', style });
 
-    const box = new Box({ id: 'box', width: '100%', height: '100%', style: { backgroundColor: 'black', hMargin: 10, vMargin: 20 } });
-
     scene.root.addChild(top);
     scene.root.addChild(bottom);
     scene.root.addChild(left);
     scene.root.addChild(right);
-    scene.root.addChild(box);
 
-    console.log('?', scene.root.root);
+    const box1 = new Box({ id: 'box1', width: '100%', height: '100%', style: { backgroundColor: 'black', hMargin: 10, vMargin: 20 } });
+    const box2 = new Box({ id: 'box2', x: '100%', width: 300, height: 10, style: { backgroundColor: 'red' } });
 
-    console.log('ready');
+    scene.root.addChild(box1);
+    box1.addChild(box2);
+
     scene.render();
 }

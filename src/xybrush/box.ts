@@ -6,30 +6,12 @@ import { Rectangle } from './rectangle';
 import type { Scene } from './scene';
 import { type IStyle, Style } from './style';
 
-const corners = {
-    center: [0.5, 0.5],
-    topLeft: [0, 0],
-    topCenter: [0.5, 0],
-    topRight: [1, 0],
-    rightCenter: [1, 0.5],
-    bottomRight: [1, 1],
-    bottomCenter: [0.5, 1],
-    bottomLeft: [0, 1],
-    leftCenter: [0, 0.5],
-} as const;
-
-type Corner = keyof typeof corners;
-
 export interface BoxState
 {
     x: number | string;
     y: number | string;
     width: number | string;
     height: number | string;
-    originX: number;
-    originY: number;
-    anchorX?: number;
-    anchorY?: number;
 }
 
 export interface BoxOptions extends BoxState
@@ -81,14 +63,15 @@ export class Box<T extends BoxState = BoxState>
 
     protected defaultState(): T
     {
-        return {
-            x: 0,
-            y: 0,
-            width: 0,
-            height: 0,
-            originX: 0,
-            originY: 0,
-        } as BoxState as T;
+        const state: BoxState
+         = {
+             x: 0,
+             y: 0,
+             width: 0,
+             height: 0,
+         };
+
+        return state as T;
     }
 
     get root()
@@ -121,16 +104,36 @@ export class Box<T extends BoxState = BoxState>
         return this.parent ? this.parent.children.indexOf(this) : -1;
     }
 
+    get minX()
+    {
+        return this.globalBounds.left;
+    }
+
+    get minY()
+    {
+        return this.globalBounds.top;
+    }
+
+    get maxX()
+    {
+        return this.globalBounds.right;
+    }
+
+    get maxY()
+    {
+        return this.globalBounds.bottom;
+    }
+
     get x()
     {
-        return typeof this.state.x === 'string' && this.parent
-            ? ((parseFloat(this.state.x) / 100) * this.parent.globalContentBounds.width) - this.width + this.style.hMargin : this.state.x as number;
+        return (typeof this.state.x === 'string' && this.parent
+            ? ((parseFloat(this.state.x) / 100) * this.parent.globalContentBounds.width) - this.width : this.state.x as number) + this.style.hMargin;
     }
 
     get y()
     {
-        return typeof this.state.y === 'string' && this.parent
-            ? ((parseFloat(this.state.y) / 100) * this.parent.globalContentBounds.height) - this.height : this.state.y as number;
+        return (typeof this.state.y === 'string' && this.parent
+            ? ((parseFloat(this.state.y) / 100) * this.parent.globalContentBounds.height) - this.height : this.state.y as number) + this.style.vMargin;
     }
 
     get width()
@@ -143,16 +146,6 @@ export class Box<T extends BoxState = BoxState>
     {
         return typeof this.state.height === 'string' && this.parent
             ? ((parseFloat(this.state.height) / 100) * this.parent.globalContentBounds.height) - (this.style.vMargin * 2) : this.state.height as number;
-    }
-
-    get originOffsetX()
-    {
-        return this.width * this.state.originX;
-    }
-
-    get originOffsetY()
-    {
-        return this.height * this.state.originY;
     }
 
     get globalBounds(): Rectangle
@@ -178,24 +171,29 @@ export class Box<T extends BoxState = BoxState>
         );
     }
 
-    get minX()
+    protected calcGlobalBounds()
     {
-        return this.globalBounds.left;
-    }
+        const { x: thisX, y: thisY, width, height } = this;
 
-    get minY()
-    {
-        return this.globalBounds.top;
-    }
+        if (this.parent)
+        {
+            const { x, y } = this.parent.globalContentBounds;
 
-    get maxX()
-    {
-        return this.globalBounds.right;
-    }
-
-    get maxY()
-    {
-        return this.globalBounds.bottom;
+            this._globalBounds = new Rectangle(
+                x + thisX,
+                y + thisY,
+                width,
+                height);
+        }
+        else
+        {
+            this._globalBounds = new Rectangle(
+                thisX,
+                thisY,
+                width,
+                height,
+            );
+        }
     }
 
     public clearBounds()
@@ -207,53 +205,6 @@ export class Box<T extends BoxState = BoxState>
         this.children.forEach((child) => child.clearBounds());
 
         Box.tree.insert(this);
-    }
-
-    protected calcGlobalBounds()
-    {
-        const { state, originOffsetX, originOffsetY, style } = this;
-        const originX = this.x - originOffsetX + style.hMargin;
-        const originY = this.y - originOffsetY + style.vMargin;
-
-        if (this.parent)
-        {
-            const { x, y, width, height } = this.parent.globalContentBounds;
-
-            let left = x + originX;
-            let top = y + originY;
-
-            if (typeof state.anchorX === 'number')
-            {
-                left = x + (width * state.anchorX) - originOffsetX;
-            }
-
-            if (typeof state.anchorY === 'number')
-            {
-                top = y + (height * state.anchorY) - originOffsetY;
-            }
-
-            this._globalBounds = new Rectangle(left, top, this.width, this.height);
-        }
-        else
-        {
-            this._globalBounds = new Rectangle(originX, originY, this.width, this.height);
-        }
-    }
-
-    public setOrigin(x: number, y: number)
-    {
-        this.state.originX = x;
-        this.state.originY = y;
-
-        this.clearBounds();
-    }
-
-    public setAnchor(x: number | undefined, y: number | undefined)
-    {
-        this.state.anchorX = x;
-        this.state.anchorY = y;
-
-        this.clearBounds();
     }
 
     public setPosition(x: number, y: number)
@@ -270,17 +221,6 @@ export class Box<T extends BoxState = BoxState>
         this.state.height = height;
 
         this.clearBounds();
-    }
-
-    public attachTo(parent: Box, sourceCorner: Corner, targetCorner: Corner)
-    {
-        parent.addChild(this);
-
-        const [originX, originY] = corners[sourceCorner];
-        const [anchorX, anchorY] = corners[targetCorner];
-
-        this.setOrigin(originX, originY);
-        this.setAnchor(anchorX, anchorY);
     }
 
     public walk<T>(callback: (box: Box, result?: T) => void, result?: T)

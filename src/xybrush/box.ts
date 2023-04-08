@@ -279,8 +279,16 @@ export class Box<T extends BoxState = BoxState>
                 .strokeStyle(borderColor, borderWidth)
                 .strokeRect(globalBounds.x, globalBounds.y, globalBounds.width, globalBounds.height);
         }
+    }
 
-        // painter.drawText(this.id, globalBounds.x + 10, globalBounds.y + 10);
+    public localMousePoint(e: MouseEvent)
+    {
+        const { scene, globalBounds } = this;
+        const p =  scene.localMousePos(e);
+        const x = p.x - globalBounds.x;
+        const y = p.y - globalBounds.y;
+
+        return { x, y };
     }
 
     public onMouseDown(e: MouseEvent)

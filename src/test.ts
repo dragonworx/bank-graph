@@ -1,5 +1,5 @@
 import { Scene } from './xybrush/scene';
-import { Text } from './xybrush/text';
+import { TextBox } from './xybrush/textbox';
 
 export function test()
 {
@@ -8,10 +8,10 @@ export function test()
 
     scene.setSize(400, 400);
 
-    const rect1 = new Text(50, 50, 100, 100);
-    const rect2 = new Text(10, 10, 50, 50);
-    const rect3 = new Text(10, 10, 50, 50);
-    const rect4 = new Text(10, 10, 50, 50);
+    const rect1 = new TextBox(50, 50, 100, 100);
+    const rect2 = new TextBox(10, 10, 50, 50);
+    const rect3 = new TextBox(10, 10, 50, 50);
+    const rect4 = new TextBox(10, 10, 50, 50);
 
     rect1.id = 'rect1';
     rect2.id = 'rect2';

@@ -2,7 +2,7 @@ import type { CSV } from './csv';
 import { Box } from './xybrush/box';
 import { Scene } from './xybrush/scene';
 import type { IStyle } from './xybrush/style';
-import { Text } from './xybrush/text';
+import { TextBox } from './xybrush/textbox';
 
 export function createTable(csv: CSV)
 {
@@ -54,7 +54,7 @@ export function createTable(csv: CSV)
     scene.root.addChild(right);
 
     const box1 = new Box({ id: 'box1', width: '100%', height: '100%', style: { backgroundColor: 'black', hMargin: 10, vMargin: 20 } });
-    const box2 = new Box({ id: 'box2', x: '100%', width: 300, height: 10, style: { backgroundColor: 'red' } });
+    const box2 = new TextBox({ id: 'box2', x: '100%', y: 0, width: 300, height: 10, text: 'The quick brown fox jumps over the lazy dog', style: { backgroundColor: 'red' } });
 
     scene.root.addChild(box1);
     box1.addChild(box2);

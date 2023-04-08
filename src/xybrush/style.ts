@@ -7,8 +7,6 @@ export interface IStyle
     borderColor: string;
     backgroundColor?: string;
     alpha: number;
-    textAlign: TextAlign;
-    verticalAlign: VerticalAlign;
     hPadding: number;
     vPadding: number;
     hMargin: number;
@@ -21,8 +19,6 @@ export class Style implements IStyle
     public borderColor;
     public backgroundColor?: string;
     public alpha;
-    public textAlign: TextAlign;
-    public verticalAlign: VerticalAlign;
     public hPadding;
     public vPadding;
     public hMargin;
@@ -33,8 +29,6 @@ export class Style implements IStyle
         borderColor = 'white',
         alpha = 1,
         backgroundColor = 'black',
-        textAlign = 'left',
-        verticalAlign = 'middle',
         hPadding = 0,
         vPadding = 0,
         hMargin = 0,
@@ -45,8 +39,6 @@ export class Style implements IStyle
         this.borderColor = borderColor;
         this.alpha = alpha;
         this.backgroundColor = backgroundColor;
-        this.textAlign = textAlign;
-        this.verticalAlign = verticalAlign;
         this.hPadding = hPadding;
         this.vPadding = vPadding;
         this.hMargin = hMargin;

@@ -33,7 +33,7 @@ export class Scene
         canvas.addEventListener('mouseout', this.onMouseOut);
 
         this.root = new Box({ id: 'root', width: canvas.width, height: canvas.height,
-            style: { textAlign: 'center', verticalAlign: 'bottom', backgroundColor: 'green', hPadding: 10, vPadding: 10 } }, this);
+            style: { backgroundColor: 'green', hPadding: 10, vPadding: 10 } }, this);
 
         this.setSize(defaultSceneWidth, defaultSceneHeight);
 
